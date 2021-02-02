@@ -1,0 +1,56 @@
+# 1. View all upcoming matches in all fields.
+SELECT U.MatchID, M.MDate AS "Match Date", F.FieldName AS "Field Name" FROM 
+ MATCHES M, FIELD F, UPCOMING U WHERE M.MatchID = U.MatchID AND M.FieldName = F.FieldName;
+
+# 2. View played matches and their scores.
+SELECT P.MatchID, M.MDate AS "Match Date", Score FROM PLAYED P, MATCHES M WHERE P.MatchID = M.MatchID;
+
+# 3. Search by team name to view played and upcoming matches.
+SELECT T.TeamName, M.MDate AS "Match" FROM TEAM T, MATCHES M WHERE (T.TeamName = M.Team1 OR T.TeamName = M.Team2) 
+ AND T.TeamName = "Thunder";
+
+# 4. Search a player to get the player’s information such as previous teams (if any) and current team.
+# EX: No Previous Teams
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Player Name", P.TeamName AS "Current Team", H.TeamName AS "Previous Team(s)" 
+ FROM PLAYER P LEFT JOIN PLAYER_HISTORY H ON P.PlayerID = H.PlayerID WHERE P.First_Name = "Karleigh" AND P.Last_Name = "Horne";
+# EX: Many Previous Teams
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Player Name", P.TeamName AS "Current Team", H.TeamName AS "Previous Team(s)" 
+ FROM PLAYER P LEFT JOIN PLAYER_HISTORY H ON P.PlayerID = H.PlayerID WHERE P.First_Name = "Serena" AND P.Last_Name = "Mcfadden";
+
+# 5. Search by player name to get his/her upcoming matches.
+# EX. No Upcoming Matches
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Player Name", M.MDate AS "Upcoming Match", U.MatchID FROM PLAYER P 
+ LEFT JOIN PLAYER_MATCHES PM ON P.PlayerID = PM.PlayerID LEFT JOIN UPCOMING U ON PM.MatchID = U.MatchID 
+ JOIN MATCHES M ON U.MatchID = M.MatchID WHERE P.First_Name = "Debra" AND P.Last_Name = "Clements";
+# EX. Many Upcoming Matches
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Player Name", M.MDate AS "Upcoming Match", U.MatchID FROM PLAYER P 
+ LEFT JOIN PLAYER_MATCHES PM ON P.PlayerID = PM.PlayerID LEFT JOIN UPCOMING U ON PM.MatchID = U.MatchID 
+ JOIN MATCHES M ON U.MatchID = M.MatchID WHERE P.First_Name = "Mary" AND P.Last_Name = "Farley";
+
+# 6. Search a coach to get the coach’s information such as previous teams (if any) and current team.
+# EX. No Previous Teams
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Coach Name", C.TeamName AS "Current Team", H.TeamName AS "Previous Team(s)" 
+ FROM COACH C LEFT JOIN COACH_HISTORY H ON C.CoachID = H.CoachID WHERE C.First_Name = "Cade" AND C.Last_Name = "Whitney";
+# EX. Many Previous Teams
+SELECT CONCAT(First_Name, " ", Last_Name) AS "Coach Name", C.TeamName AS "Current Team", H.TeamName AS "Previous Team(s)" 
+ FROM COACH C LEFT JOIN COACH_HISTORY H ON C.CoachID = H.CoachID WHERE C.First_Name = "Orlando" AND C.Last_Name = "Nixon";
+
+# 7. Search matches in a specific field (multiple queries).
+#	a) Previous
+SELECT P.MatchID AS "Previous Match ID", M.MDate AS "Match Date", F.FieldName AS "Field Name" 
+ FROM PLAYED P, MATCHES M, FIELD F WHERE P.MatchID = M.MatchID AND M.FieldName = F.FieldName AND F.FieldName = "hendrerit";
+
+#	b) Upcoming
+SELECT U.MatchID AS "Upcoming Match ID", M.MDate AS "Match Date", F.FieldName AS "Field Name"
+ FROM UPCOMING U, MATCHES M, FIELD F WHERE U.MatchID = M.MatchID AND M.FieldName = F.FieldName AND F.FieldName = "hendrerit";
+
+#	c) All
+SELECT MatchID as "Match ID", MDate AS "Match Date", F.FieldName AS "Field Name"
+ FROM MATCHES M, FIELD F WHERE M.FieldName = F.FieldName AND F.FieldName = "hendrerit";
+
+# 8. Show the most popular field’s information (based on the number of matches including played and scheduled).
+SELECT F.FieldName, F.Street, F.City, F.State, F.Zip, F.Capacity from MATCHES M, FIELD F WHERE M.FieldName = F.FieldName 
+ GROUP BY M.FieldName ORDER BY COUNT(*) DESC LIMIT 1;
+
+# 9. Which match had the largest number of attendees and where was it played.
+SELECT P.MatchID, P.Attendance, M.FieldName FROM PLAYED P, MATCHES M WHERE P.MatchID = M.MatchID ORDER BY P.Attendance DESC LIMIT 1;

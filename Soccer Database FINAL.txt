@@ -1,0 +1,201 @@
+DROP TABLE WON;
+DROP TABLE LOST;
+DROP TABLE PLAYED;
+DROP TABLE UPCOMING;
+DROP TABLE COACH_HISTORY;
+DROP TABLE PLAYER_HISTORY;
+DROP TABLE PLAYER_MATCHES;
+DROP TABLE COACH;
+DROP TABLE PLAYER;
+DROP TABLE MATCHES;
+DROP TABLE TEAM;
+DROP TABLE FIELD;
+
+CREATE TABLE IF NOT EXISTS FIELD
+(FieldName VARCHAR(50) NOT NULL,
+Street VARCHAR(50),
+City VARCHAR(30),
+State VARCHAR(2),
+Zip VARCHAR(20),
+Capacity int,
+CONSTRAINT field_primary_id PRIMARY KEY(FieldName)
+);
+
+Create table if not exists TEAM (
+TeamName varchar(255),
+primary key (TeamName)
+);
+
+CREATE TABLE IF NOT EXISTS MATCHES
+(MatchID int AUTO_INCREMENT,
+MDate VARCHAR(50),
+FieldName VARCHAR(50),
+Team1 VARCHAR(255),
+Team2 VARCHAR(255),
+CONSTRAINT match_primary_id PRIMARY KEY (MatchID),
+CONSTRAINT match_field_fkey FOREIGN KEY (FieldName) REFERENCES FIELD(FieldName),
+CONSTRAINT match_team1_fkey FOREIGN KEY (Team1) REFERENCES TEAM(TeamName),
+CONSTRAINT match_team2_fkey FOREIGN KEY (Team2) REFERENCES TEAM(TeamName)
+);
+
+CREATE TABLE IF NOT EXISTS PLAYED
+(MatchID int NOT NULL,
+Score VARCHAR(7),
+Attendance int,
+CONSTRAINT played_match_fkey FOREIGN KEY (MatchID) REFERENCES MATCHES(MatchID)
+);
+
+CREATE TABLE IF NOT EXISTS UPCOMING
+(MatchID int NOT NULL,
+Cancelled VARCHAR(7),
+CONSTRAINT upcoming_math_fkey FOREIGN KEY (MatchID) REFERENCES MATCHES(MatchID)
+);
+
+CREATE TABLE IF NOT EXISTS WON
+(MatchID int NOT NULL,
+TeamName VARCHAR(50),
+CONSTRAINT won_match_fkey FOREIGN KEY (MatchID) REFERENCES MATCHES(MatchID),
+CONSTRAINT won_team_fkey FOREIGN KEY (TeamName) REFERENCES TEAM(TeamName)
+);
+
+CREATE TABLE IF NOT EXISTS LOST
+(MatchID int NOT NULL,
+TeamName VARCHAR(50),
+CONSTRAINT lost_match_fkey FOREIGN KEY (MatchID) REFERENCES MATCHES(MatchID),
+CONSTRAINT lost_team_fkey FOREIGN KEY (TeamName) REFERENCES TEAM(TeamName)
+);
+
+CREATE TABLE if not exists PLAYER (
+ PlayerID int AUTO_INCREMENT,
+ First_Name varchar(255),
+ Last_Name varchar(255),
+ Age int,
+ TeamName varchar(255),
+ PRIMARY KEY (PlayerID),
+ Constraint Play_Team_fkey foreign key (TeamName) references TEAM(TeamName)
+);
+
+Create table if not exists COACH (
+CoachID int AUTO_INCREMENT,
+First_Name varchar(255),
+Last_Name varchar(255),
+Age int,
+TeamName varchar(255),
+primary key (CoachID),
+constraint Coach_Team_fkey foreign key (TeamName) references TEAM(TeamName)
+);
+
+Create table if not exists PLAYER_MATCHES (
+PlayerID int,
+MatchID int,
+constraint PlayerMatches_Playerid_fkey foreign key (PlayerID) references PLAYER(PlayerID),
+constraint PlayerMatches_MatchID_fkey foreign key (MatchID) references MATCHES(MatchID)
+);
+
+CREATE TABLE IF NOT EXISTS COACH_HISTORY
+(CoachID int,
+TeamName VARCHAR(255),
+constraint CoachHistory_Coachid_fkey foreign key (CoachID) references COACH(CoachID),
+constraint CoachHistory_Teamname_fkey foreign key (TeamName) references TEAM(TeamName)
+);
+
+CREATE TABLE IF NOT EXISTS PLAYER_HISTORY
+(PlayerID int,
+TeamName VARCHAR(255),
+constraint PlayerHistory_Playerid_fkey foreign key (PlayerID) references PLAYER(PlayerID),
+constraint PlayerHistory_Teamname_fkey foreign key (TeamName) references TEAM(TeamName)
+);
+
+INSERT INTO FIELD (FieldName,Street,City,State,Zip,Capacity) VALUES ("nec","169-4723 Tellus Street","Sheikhupura","SC","Z7288",983),
+ ("faucibus","P.O. Box 471, 7267 Sit Street","Pumanque","TX","9462",777),
+ ("felis","Ap #227-482 Arcu. Avenue","Missoula","NY","11603",879),
+ ("Sed","7013 Lacus. Rd.","Massello","CA","32980",561),
+ ("hendrerit","P.O. Box 105, 7497 Venenatis Ave","El Tambo","OR","23122-13073",534),
+ ("gravida","Ap #582-4859 Eleifend St.","Ozyorsk","CA","18752",545);
+ 
+ Insert into TEAM (TeamName) values ("En Fuego CF"),
+ ("Thunder"),
+ ("Royals"),
+ ("Chelsea"),
+ ("Le Bleu");
+
+Insert INTO MATCHES (MDate,FieldName,Team1,Team2) VALUES ("06/27/2021","nec", "Thunder", "Chelsea"),
+ ("09/07/2019","faucibus", "Thunder", "Royals"),
+ ("12/07/2020","felis", "Le Bleu", "En Fuego CF"),
+ ("01/10/2020","gravida", "En Fuego CF", "Chelsea"),
+ ("11/14/2019","hendrerit", "Royals", "Le Bleu"),
+ ("03/04/2021","hendrerit", "Royals", "En Fuego CF"),
+ ("05/18/2019","nec", "Thunder", "En Fuego CF"),
+ ("08/31/2019","Sed", "Chelsea", "Royals"),
+ ("06/26/2021","gravida", "Chelsea", "Le Bleu"),
+ ("03/21/2021","hendrerit", "Le Bleu", "Thunder");
+
+Insert into PLAYED (MatchID,Score,Attendance) Values (2,"0-2",500),
+ (4, "3-1",800),
+ (5,"1-2",500),
+ (7,"0-4",500),
+ (8,"3-2",500);
+
+Insert into UPCOMING (MatchID,Cancelled) Values (1,false),
+ (3,true),
+ (6,false),
+ (9,false),
+ (10,true);
+
+Insert into WON (MatchID,TeamName) values (2, "Thunder"),
+ (4, "En Fuego CF"),
+ (5, "Royals"),
+ (7, "Thunder"),
+ (8, "Chelsea");
+
+Insert into LOST (MatchID,TeamName) values (2, "Royals"),
+ (4, "Chelsea"),
+ (5, "Le Bleu"),
+ (7, "En Fuego CF"),
+ (8, "Royals");
+
+Insert into PLAYER (First_Name, Last_Name, Age,TeamName) VALUES ("Yoshio","Hanson",28,"Le Bleu"), #1
+ ("Karleigh","Horne",35,"Royals"), #2
+ ("Beck","Barton",20,"Royals"), #3
+ ("Serena","Mcfadden",32,"Thunder"), #4
+ ("Debra","Clements",24,"Thunder"), #5
+ ("Hayes","Gross",29,"Chelsea"), #6
+ ("Walker","Singleton",30,"Thunder"), #7
+ ("Jena","Woods",21,"Thunder"), #8
+ ("Timon","Bryant",20,"Thunder"), #9
+ ("Denton","Camacho",32,"Chelsea"), #10
+ ("Anastasia","Townsend",24,"Thunder"), #11
+ ("Mary","Farley",29,"En Fuego CF"), #12
+ ("Laith","Gilbert",27,"Chelsea"), #13
+ ("Daryl","Spence",23,"Le Bleu"), #14
+ ("James","Frazier",19,"En Fuego CF"), #15
+ ("Florence","Acosta",33,"Le Bleu"), #16
+ ("Rajah","Frazier",31,"En Fuego CF"), #17
+ ("Matthew","Baird",27,"Thunder"), #18
+ ("Beck","Fitzpatrick",24,"En Fuego CF"), #19
+ ("Paul","Abbott",34,"En Fuego CF"); #20
+
+Insert into COACH (First_Name,Last_Name,Age,TeamName) VALUES ("Maya","Curry",35,"Royals"),
+ ("Cade","Whitney",38,"Thunder"),
+ ("Abdul","Preston",40,"Chelsea"),
+ ("Teegan","Wilkins",37,"En Fuego CF"),
+ ("Orlando","Nixon",43,"Le Bleu");
+
+Insert into PLAYER_MATCHES (PlayerID,MatchID) VALUES (18,2),(11,7),(12,1),(11,5),
+ (4,1),(13,7),(20,6),(15,7),(9,5),(13,3),(3,10),(3,8),
+ (3,9),(7,7),(1,10),(12,2),(6,3),(2,6),(17,8);
+INSERT INTO PLAYER_MATCHES (PlayerID,MatchID) VALUES (17,2),(15,8),(12,3),
+ (3,5),(3,4),(3,1),(14,10),(7,4),(6,9),(9,4),
+ (7,3),(2,7),(13,3),(9,3),(2,2),(20,8),(15,4);
+
+INSERT INTO COACH_HISTORY (CoachID,TeamName) VALUES (4,"Chelsea"),
+ (5,"En Fuego CF"),(4,"Royals"),(3,"Thunder"),(5,"Royals"),(1,"Royals"),
+ (1,"Chelsea"),(3,"Royals");
+
+INSERT INTO PLAYER_HISTORY (PlayerID,TeamName) VALUES (1, "Chelsea"), (1, "Royals"),
+ (3, "En Fuego CF"), (4, "Royals"), (4, "Chelsea"), (4, "Le Bleu"), (5, "Royals"),
+ (6, "Le Bleu"), (8, "Royals"), (8,"Chelsea"), (9, "En Fuego CF"), (10, "Le Bleu"), 
+ (10, "Royals"), (11, "Le Bleu"), (12, "Royals"), (12, "Thunder"), (12, "Le Bleu"),
+ (13, "Thunder"), (14, "En Fuego CF"), (14, "Chelsea"), (15, "Thunder"), (16, "En Fuego CF"),
+ (16, "Chelsea"), (18, "En Fuego CF"), (18, "Le Bleu"), (19, "Thunder"), (20, "Royals"),
+ (20, "Le Bleu"), (20, "Thunder");
